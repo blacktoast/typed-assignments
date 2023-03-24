@@ -1,0 +1,13 @@
+.sideBar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  background: #f7f7f7;
+}
+
+.sideBar__nav {
+  background: #ffffff;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
