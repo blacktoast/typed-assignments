@@ -10,4 +10,33 @@
   background: #ffffff;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   padding: 10px;
+  position: relative;
+}
+
+.inputContainer {
+  position: absolute;
+  top: 50px;
+  left: 15px;
+  width: 260px;
+  background-color: white;
+
+  border: 1px solid #e5e5e5;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.inputUrl {
+  width: 100%;
+  padding: 8px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  background-color: #f7f7f7;
+}
+
+.inputUrl:focus {
+  border-color: red;
+  border: 1px solid #38a5e1;
+  outline: none;
 }
