@@ -2,21 +2,25 @@ import { TypedIcon } from 'typed-design-system';
 import Button from '../../components/Button/Button';
 import ResourceView from '../../components/ResourceView';
 import style from './Main.module.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { ChangeEvent, DragEvent, useEffect, useRef, useState } from 'react';
+import { resourceType } from '../../types';
+import { v4 } from 'uuid';
 
 function Main() {
   const [isShowUrlInput, setShowUrlInput] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [image, setImage] = useState<File>();
+  const [resources, setResource] = useState<resourceType[]>([]);
 
-  const inputUrl = useRef<HTMLInputElement>(null);
+  const inputUrlRef = useRef<HTMLInputElement>(null);
   const inputImgRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (isShowUrlInput && inputUrl.current) {
-      inputUrl.current.value = 'https://';
-      inputUrl.current.focus();
+    if (isShowUrlInput && inputUrlRef.current) {
+      inputUrlRef.current.value = 'https://';
+      inputUrlRef.current.focus();
     }
   }, [isShowUrlInput]);
 
@@ -31,21 +35,24 @@ function Main() {
   };
 
   const onFocusOutUrlInput = () => {
-    const url = inputUrl.current?.value;
+    const url = inputUrlRef.current?.value;
 
-    if (url && !validateUrl(url)) {
+    if (!url) {
+      return;
+    }
+
+    if (!validateUrl(url)) {
       setIsModalOpen(true);
     } else {
       setShowUrlInput(false);
-      console.log('store!');
-      //나중에 저장 로직 구현
+      storeResource({ id: v4(), data: url });
     }
   };
 
   const handleReEnter = () => {
     setIsModalOpen(false);
     setShowUrlInput(true);
-    inputUrl.current?.focus();
+    inputUrlRef.current?.focus();
   };
 
   const handleExitWithoutSaving = () => {
@@ -55,12 +62,7 @@ function Main() {
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      const files = Array.from(event.target.files);
-      files.forEach((file) => {
-        // Process each uploaded image file here (e.g., display a preview, upload to a server, etc.)
-        console.log('Image file:', file);
-        setImage(file);
-      });
+      storeImages(event.target.files);
     }
   };
 
@@ -86,15 +88,47 @@ function Main() {
 
     if (hasFile) {
       console.log(files);
-      const validFiles = Array.from(event.dataTransfer.files).filter(
-        (file) => file.type === 'image/png' || file.type === 'image/jpeg'
-      );
-
-      validFiles.forEach((file) => {
-        // Process each uploaded image file here (e.g., display a preview, upload to a server, etc.)
-        console.log('Image file:', file);
-      });
+      storeImages(files);
     }
+  };
+
+  const storeImages = (images: FileList) => {
+    const validFiles = Array.from(images).filter(
+      (file) => file.type === 'image/png' || file.type === 'image/jpeg'
+    );
+
+    validFiles.forEach((file) => {
+      storeResource({ id: v4(), data: file });
+    });
+  };
+
+  const storeResource = (resource: resourceType) => {
+    const delay = Math.floor(Math.random() * (1000 - 300 + 1)) + 300;
+    const isSuccess = Math.random() <= 0.8;
+    const { data } = resource;
+    console.log(resource);
+    setResource([{ ...resource, isFetching: true }, ...resources]);
+
+    setTimeout(() => {
+      if (isSuccess) {
+        setResource((prevResources) =>
+          prevResources.map((prev) =>
+            prev.id === resource.id ? { ...resource, isFetching: false } : prev
+          )
+        );
+
+        data instanceof File
+          ? toast.success(`${data.name} 등록에 성공 했습니다.`)
+          : toast.success(`${data} 등록에 성공 했습니다.`);
+      } else {
+        data instanceof File
+          ? toast.error(`${data.name} 등록에 실패 했습니다.`)
+          : toast.error(`${data} 등록에 실패 했습니다.`);
+        setResource((prevResources) =>
+          prevResources.filter((prev) => prev.id !== resource.id)
+        );
+      }
+    }, 4000);
   };
 
   return (
@@ -120,21 +154,30 @@ function Main() {
               multiple
               style={{ display: 'none' }}
             />
-
             {isShowUrlInput && (
               <div className={style.inputContainer}>
                 <input
                   className={style.inputUrl}
                   type="text"
-                  ref={inputUrl}
+                  ref={inputUrlRef}
                   onBlur={onFocusOutUrlInput}
                 />
               </div>
             )}
           </div>
+          {resources.map((resource) => {
+            if (resource?.isFetching) {
+              return <div key={resource.id}>loadings</div>;
+            }
+
+            if (resource.data instanceof File) {
+              return <div key={resource.id}>{resource.data.name}</div>;
+            }
+
+            return <div key={resource.id}>{resource.data}</div>;
+          })}
         </div>
         <ResourceView />
-        {image && <img src={URL.createObjectURL(image)} alt="" />}
       </div>
 
       {isModalOpen && (
@@ -154,6 +197,7 @@ function Main() {
           </div>
         </div>
       )}
+      <ToastContainer />
     </>
   );
 }
