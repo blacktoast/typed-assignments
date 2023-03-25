@@ -107,7 +107,10 @@ function Main() {
     const isSuccess = Math.random() <= 0.8;
     const { data } = resource;
     console.log(resource);
-    setResource([{ ...resource, isFetching: true }, ...resources]);
+    setResource((prevResources) => [
+      { ...resource, isFetching: true },
+      ...prevResources,
+    ]);
 
     setTimeout(() => {
       if (isSuccess) {
@@ -128,7 +131,7 @@ function Main() {
           prevResources.filter((prev) => prev.id !== resource.id)
         );
       }
-    }, 4000);
+    }, 1000);
   };
 
   return (
