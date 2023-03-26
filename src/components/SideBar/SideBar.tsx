@@ -119,7 +119,6 @@ function SideBar({
     const hasFile = files && event.dataTransfer.files.length > 0;
 
     if (hasFile) {
-      console.log(files);
       storeImages(files);
     }
   };

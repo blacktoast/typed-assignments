@@ -1,6 +1,5 @@
 import {
   ChangeEvent,
-  MouseEventHandler,
   useState,
   useRef,
   useEffect,
