@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ChangeEvent, DragEvent, useEffect, useRef, useState } from 'react';
 import { resourceType } from '../../types';
 import { v4 } from 'uuid';
+import ResourceCard from '../../components/ResourceCard/ResourceCard';
 
 function Main() {
   const [isShowUrlInput, setShowUrlInput] = useState(false);
@@ -60,7 +61,7 @@ function Main() {
     setShowUrlInput(false);
   };
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       storeImages(event.target.files);
     }
@@ -71,16 +72,16 @@ function Main() {
     return urlPattern.test(url);
   };
 
-  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+  const onDragOver = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(true);
   };
 
-  const handleDragLeave = () => {
+  const onDragLeave = () => {
     setIsDragging(false);
   };
 
-  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+  const onDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setIsDragging(false);
     const files = event.dataTransfer.files;
@@ -142,9 +143,9 @@ function Main() {
           style={{
             border: isDragging ? '2px dashed gray' : 'none',
           }}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
         >
           <div className={style.sideBar__nav}>
             <Button title="URL 추가" onClick={onClickUrlInput}></Button>
@@ -152,7 +153,7 @@ function Main() {
             <input
               type="file"
               ref={inputImgRef}
-              onChange={handleFileChange}
+              onChange={onFileChange}
               accept=".png, .jpg, .jpeg"
               multiple
               style={{ display: 'none' }}
@@ -174,10 +175,12 @@ function Main() {
             }
 
             if (resource.data instanceof File) {
-              return <div key={resource.id}>{resource.data.name}</div>;
+              return (
+                <ResourceCard key={resource.id} title={resource.data.name} />
+              );
             }
 
-            return <div key={resource.id}>{resource.data}</div>;
+            return <ResourceCard key={resource.id} title={resource.data} />;
           })}
         </div>
         <ResourceView />
