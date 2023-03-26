@@ -12,6 +12,7 @@ function Main() {
   const [isShowUrlInput, setShowUrlInput] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedResourceId, setSelectedResourceId] = useState('');
   const [resources, setResource] = useState<resourceType[]>([]);
 
   const inputUrlRef = useRef<HTMLInputElement>(null);
@@ -130,23 +131,23 @@ function Main() {
   };
 
   const editResource = (resource: resourceType) => {
-    // const isImage = resource.title instanceof File;
-    // console.log('test', resource, isImage);
-    // if (isImage) {
-    //   const newResources = resources.map((prevResource) => {
-    //     if (
-    //       prevResource.id === resource.id &&
-    //       prevResource.title instanceof File
-    //     ) {
-    //       return resource;
-    //     }
-    //     return prevResource;
-    //   });
-    //   console.log(newResources);
-    //   setResource(newResources);
-    //   return true;
-    // }
-    // return false;
+    const isImage = resource?.file instanceof File;
+
+    if (!isImage && !validateUrl(resource.title)) {
+      toast.error('올바르지 않는 URL입니다. 수정에 실패 했습니다.');
+      return false;
+    }
+
+    const newResources = resources.map((prevResource) => {
+      if (prevResource.id === resource.id) {
+        return resource;
+      }
+      return prevResource;
+    });
+    setResource(newResources);
+    toast.success('리소스를 수정 했습니다.');
+
+    return true;
   };
 
   return (

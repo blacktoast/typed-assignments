@@ -39,14 +39,20 @@ function ResourceCard({ resource, onClickDelete, editResource }: Props) {
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setIsEditing(false);
+      const isEditSuccess = editResource({ ...resource, title: editedTitle });
+      if (!isEditSuccess) {
+        setEditedTitle(resource.title);
+      }
     }
   };
 
   const onBlur = () => {
     setIsEditing(false);
 
-    // editResource(newResource);
-    //수정을 걸었다가. 만약 수정에 실패하면> 토스만 띄워줄까? 그렇게되면 수정전 데이터터로 롤백이 되야함.
+    const isEditSuccess = editResource({ ...resource, title: editedTitle });
+    if (!isEditSuccess) {
+      setEditedTitle(resource.title);
+    }
   };
 
   return (
