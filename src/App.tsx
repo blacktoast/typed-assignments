@@ -1,12 +1,9 @@
-import { useState } from 'react';
-import { TypedIcon } from 'typed-design-system';
+import Main from './pages/Main/Main';
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <div className="App">
-      <TypedIcon icon="trash_19" />
+    <div className="App ">
+      <Main />
     </div>
   );
 }
