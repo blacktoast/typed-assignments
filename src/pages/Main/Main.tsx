@@ -184,7 +184,7 @@ function Main() {
 
   return (
     <>
-      <div className="flex h-full">
+      <div className="flex ">
         <div
           className={style.sideBar}
           style={{
@@ -257,7 +257,6 @@ function Main() {
           </div>
         </div>
       )}
-      <ToastContainer />
     </>
   );
 }
