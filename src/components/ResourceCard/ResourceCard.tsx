@@ -8,17 +8,20 @@ import {
 } from 'react';
 import { TypedIcon } from 'typed-design-system';
 import style from './ResourceCard.module.css';
+import { resourceType } from '../../types/index';
 
 interface Props {
-  id: string;
-  title: string;
-  onClickEdit?: MouseEventHandler<HTMLElement>;
+  resource: resourceType;
+  editResource?: () => {};
   onClickDelete?: MouseEventHandler<HTMLElement>;
 }
 
-function ResourceCard({ id, title, onClickDelete }: Props) {
+function ResourceCard({ resource, onClickDelete }: Props) {
+  const title =
+    resource.data instanceof File ? resource.data.name : resource.data;
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(title);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -45,6 +48,7 @@ function ResourceCard({ id, title, onClickDelete }: Props) {
   const onBlur = () => {
     setIsEditing(false);
     console.log('store');
+    //수정을 걸었다가. 만약 수정에 실패하면> 토스만 띄워줄까? 그렇게되면 수정전 데이터터로 롤백이 되야함.
   };
 
   return (

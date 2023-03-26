@@ -107,7 +107,7 @@ function Main() {
     const delay = Math.floor(Math.random() * (1000 - 300 + 1)) + 300;
     const isSuccess = Math.random() <= 0.8;
     const { data } = resource;
-    console.log(resource);
+
     setResource((prevResources) => [
       { ...resource, isFetching: true },
       ...prevResources,
@@ -132,8 +132,10 @@ function Main() {
           prevResources.filter((prev) => prev.id !== resource.id)
         );
       }
-    }, 1000);
+    }, delay);
   };
+
+  const editResource = (type: 'image' | 'url', title: string, id: string) => {};
 
   return (
     <>
@@ -175,12 +177,10 @@ function Main() {
             }
 
             if (resource.data instanceof File) {
-              return (
-                <ResourceCard key={resource.id} title={resource.data.name} />
-              );
+              return <ResourceCard key={resource.id} resource={resource} />;
             }
 
-            return <ResourceCard key={resource.id} title={resource.data} />;
+            return <ResourceCard key={resource.id} resource={resource} />;
           })}
         </div>
         <ResourceView />
