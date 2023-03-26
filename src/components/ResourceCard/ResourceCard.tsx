@@ -14,7 +14,10 @@ import { resourceType } from '../../types/index';
 interface Props {
   resource: resourceType;
   editResource: (resource: resourceType) => boolean;
-  onClickDelete: (e: MouseEvent<HTMLButtonElement>, id: string) => void;
+  onClickDelete: (
+    e: MouseEvent<HTMLButtonElement>,
+    resource: resourceType
+  ) => void;
   onClickCard: (id: string) => void;
 }
 
@@ -80,7 +83,7 @@ function ResourceCard({
         <button onClick={onClickEdit}>
           <TypedIcon icon="edit_19"></TypedIcon>
         </button>
-        <button onClick={(e) => onClickDelete(e, resource.id)}>
+        <button onClick={(e) => onClickDelete(e, resource)}>
           <TypedIcon icon="trash_19"></TypedIcon>
         </button>
       </div>
