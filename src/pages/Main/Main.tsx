@@ -51,6 +51,17 @@ function Main() {
       URL.revokeObjectURL(resource.imgUrl);
   };
 
+  const convertYouTubeLink = (url: string) => {
+    const regex = /youtube\.com\/watch\?v=([^&]+)/;
+    const match = url.match(regex);
+
+    if (match && match[1]) {
+      const videoId = match[1];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url;
+  };
+
   const onClickUrlInput = () => {
     setShowUrlInput(true);
   };
@@ -67,13 +78,17 @@ function Main() {
     if (!url) {
       return;
     }
-
     if (!validateUrl(url)) {
       setIsModalOpen(true);
     } else {
       setShowUrlInput(false);
-      storeResource({ id: v4(), title: url, url });
+      storeUrl(url);
     }
+  };
+
+  const storeUrl = (url: string) => {
+    const newUrl = convertYouTubeLink(url);
+    storeResource({ id: v4(), title: url, url: newUrl });
   };
 
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -242,7 +257,7 @@ function Main() {
           />
         )}
       </div>
-
+      <ToastContainer />
       {isModalOpen && (
         <div className={style.modal}>
           <div className={style.modalContent}>
