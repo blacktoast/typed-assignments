@@ -3,7 +3,14 @@ import ResourceView from '../../components/ResourceView';
 import style from './Main.module.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ChangeEvent, DragEvent, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  DragEvent,
+  MouseEvent,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { resourceType } from '../../types';
 import { v4 } from 'uuid';
 import ResourceCard from '../../components/ResourceCard/ResourceCard';
@@ -12,8 +19,8 @@ function Main() {
   const [isShowUrlInput, setShowUrlInput] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [selectedResourceId, setSelectedResourceId] = useState('');
   const [resources, setResource] = useState<resourceType[]>([]);
+  const [selectedResourceId, setSelectedResourceId] = useState('');
 
   const inputUrlRef = useRef<HTMLInputElement>(null);
   const inputImgRef = useRef<HTMLInputElement>(null);
@@ -24,6 +31,16 @@ function Main() {
       inputUrlRef.current.focus();
     }
   }, [isShowUrlInput]);
+
+  const onClickCard = (id: string) => {
+    setSelectedResourceId(id);
+  };
+
+  const onClickCardDelete = (e: MouseEvent<HTMLButtonElement>, id: string) => {
+    e.stopPropagation();
+    setResource(resources.filter((resource) => resource.id !== id));
+    if (id === selectedResourceId) setSelectedResourceId('');
+  };
 
   const onClickUrlInput = () => {
     setShowUrlInput(true);
@@ -50,26 +67,10 @@ function Main() {
     }
   };
 
-  const handleReEnter = () => {
-    setIsModalOpen(false);
-    setShowUrlInput(true);
-    inputUrlRef.current?.focus();
-  };
-
-  const handleExitWithoutSaving = () => {
-    setIsModalOpen(false);
-    setShowUrlInput(false);
-  };
-
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       storeImages(event.target.files);
     }
-  };
-
-  const validateUrl = (url: string) => {
-    const urlPattern = /^(https?:\/\/)/;
-    return urlPattern.test(url);
   };
 
   const onDragOver = (event: DragEvent<HTMLDivElement>) => {
@@ -103,6 +104,21 @@ function Main() {
     });
   };
 
+  const validateUrl = (url: string) => {
+    const urlPattern = /^(https?:\/\/)/;
+    return urlPattern.test(url);
+  };
+
+  const handleReEnter = () => {
+    setIsModalOpen(false);
+    setShowUrlInput(true);
+    inputUrlRef.current?.focus();
+  };
+
+  const handleExitWithoutSaving = () => {
+    setIsModalOpen(false);
+    setShowUrlInput(false);
+  };
   const storeResource = (resource: resourceType) => {
     const delay = Math.floor(Math.random() * (1000 - 300 + 1)) + 300;
     const isSuccess = Math.random() <= 0.8;
@@ -188,25 +204,26 @@ function Main() {
             if (resource?.isFetching) {
               return <div key={resource.id}>loadings</div>;
             }
-            if (resource?.file) {
-              return (
-                <ResourceCard
-                  key={resource.id}
-                  resource={resource}
-                  editResource={editResource}
-                />
-              );
-            }
             return (
               <ResourceCard
                 key={resource.id}
                 resource={resource}
                 editResource={editResource}
+                onClickCard={onClickCard}
+                onClickDelete={onClickCardDelete}
               />
             );
           })}
         </div>
-        <ResourceView />
+        {selectedResourceId && (
+          <ResourceView
+            resource={
+              resources.filter(
+                (resource) => resource.id === selectedResourceId
+              )[0]
+            }
+          />
+        )}
       </div>
 
       {isModalOpen && (

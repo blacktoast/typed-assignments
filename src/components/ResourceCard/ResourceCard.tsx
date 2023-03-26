@@ -5,6 +5,7 @@ import {
   useRef,
   useEffect,
   KeyboardEvent,
+  MouseEvent,
 } from 'react';
 import { TypedIcon } from 'typed-design-system';
 import style from './ResourceCard.module.css';
@@ -13,10 +14,16 @@ import { resourceType } from '../../types/index';
 interface Props {
   resource: resourceType;
   editResource: (resource: resourceType) => boolean;
-  onClickDelete?: MouseEventHandler<HTMLElement>;
+  onClickDelete: (e: MouseEvent<HTMLButtonElement>, id: string) => void;
+  onClickCard: (id: string) => void;
 }
 
-function ResourceCard({ resource, onClickDelete, editResource }: Props) {
+function ResourceCard({
+  resource,
+  onClickDelete,
+  editResource,
+  onClickCard,
+}: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTitle, setEditedTitle] = useState(resource.title);
 
@@ -32,7 +39,8 @@ function ResourceCard({ resource, onClickDelete, editResource }: Props) {
     setEditedTitle(e.target.value);
   };
 
-  const onClickEdit = () => {
+  const onClickEdit = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     setIsEditing(!isEditing);
   };
 
@@ -48,7 +56,6 @@ function ResourceCard({ resource, onClickDelete, editResource }: Props) {
 
   const onBlur = () => {
     setIsEditing(false);
-
     const isEditSuccess = editResource({ ...resource, title: editedTitle });
     if (!isEditSuccess) {
       setEditedTitle(resource.title);
@@ -56,7 +63,7 @@ function ResourceCard({ resource, onClickDelete, editResource }: Props) {
   };
 
   return (
-    <div className={style.card}>
+    <div className={style.card} onClick={() => onClickCard(resource.id)}>
       {isEditing ? (
         <input
           className={style.text}
@@ -73,7 +80,7 @@ function ResourceCard({ resource, onClickDelete, editResource }: Props) {
         <button onClick={onClickEdit}>
           <TypedIcon icon="edit_19"></TypedIcon>
         </button>
-        <button onClick={onClickDelete}>
+        <button onClick={(e) => onClickDelete(e, resource.id)}>
           <TypedIcon icon="trash_19"></TypedIcon>
         </button>
       </div>
