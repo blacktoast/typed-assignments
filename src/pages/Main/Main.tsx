@@ -1,4 +1,3 @@
-import { TypedIcon } from 'typed-design-system';
 import Button from '../../components/Button/Button';
 import ResourceView from '../../components/ResourceView';
 import style from './Main.module.css';
@@ -46,7 +45,7 @@ function Main() {
       setIsModalOpen(true);
     } else {
       setShowUrlInput(false);
-      storeResource({ id: v4(), data: url });
+      storeResource({ id: v4(), title: url });
     }
   };
 
@@ -99,14 +98,13 @@ function Main() {
     );
 
     validFiles.forEach((file) => {
-      storeResource({ id: v4(), data: file });
+      storeResource({ id: v4(), title: file.name, file });
     });
   };
 
   const storeResource = (resource: resourceType) => {
     const delay = Math.floor(Math.random() * (1000 - 300 + 1)) + 300;
     const isSuccess = Math.random() <= 0.8;
-    const { data } = resource;
 
     setResource((prevResources) => [
       { ...resource, isFetching: true },
@@ -121,13 +119,9 @@ function Main() {
           )
         );
 
-        data instanceof File
-          ? toast.success(`${data.name} 등록에 성공 했습니다.`)
-          : toast.success(`${data} 등록에 성공 했습니다.`);
+        toast.success(`${resource.title} 등록에 성공 했습니다.`);
       } else {
-        data instanceof File
-          ? toast.error(`${data.name} 등록에 실패 했습니다.`)
-          : toast.error(`${data} 등록에 실패 했습니다.`);
+        toast.error(`${resource.title} 등록에 실패 했습니다.`);
         setResource((prevResources) =>
           prevResources.filter((prev) => prev.id !== resource.id)
         );
@@ -135,7 +129,25 @@ function Main() {
     }, delay);
   };
 
-  const editResource = (type: 'image' | 'url', title: string, id: string) => {};
+  const editResource = (resource: resourceType) => {
+    // const isImage = resource.title instanceof File;
+    // console.log('test', resource, isImage);
+    // if (isImage) {
+    //   const newResources = resources.map((prevResource) => {
+    //     if (
+    //       prevResource.id === resource.id &&
+    //       prevResource.title instanceof File
+    //     ) {
+    //       return resource;
+    //     }
+    //     return prevResource;
+    //   });
+    //   console.log(newResources);
+    //   setResource(newResources);
+    //   return true;
+    // }
+    // return false;
+  };
 
   return (
     <>
@@ -175,12 +187,22 @@ function Main() {
             if (resource?.isFetching) {
               return <div key={resource.id}>loadings</div>;
             }
-
-            if (resource.data instanceof File) {
-              return <ResourceCard key={resource.id} resource={resource} />;
+            if (resource?.file) {
+              return (
+                <ResourceCard
+                  key={resource.id}
+                  resource={resource}
+                  editResource={editResource}
+                />
+              );
             }
-
-            return <ResourceCard key={resource.id} resource={resource} />;
+            return (
+              <ResourceCard
+                key={resource.id}
+                resource={resource}
+                editResource={editResource}
+              />
+            );
           })}
         </div>
         <ResourceView />

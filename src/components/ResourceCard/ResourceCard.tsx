@@ -12,15 +12,13 @@ import { resourceType } from '../../types/index';
 
 interface Props {
   resource: resourceType;
-  editResource?: () => {};
+  editResource: (resource: resourceType) => boolean;
   onClickDelete?: MouseEventHandler<HTMLElement>;
 }
 
-function ResourceCard({ resource, onClickDelete }: Props) {
-  const title =
-    resource.data instanceof File ? resource.data.name : resource.data;
+function ResourceCard({ resource, onClickDelete, editResource }: Props) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(title);
+  const [editedTitle, setEditedTitle] = useState(resource.title);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -41,13 +39,13 @@ function ResourceCard({ resource, onClickDelete }: Props) {
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setIsEditing(false);
-      console.log('store!@');
     }
   };
 
   const onBlur = () => {
     setIsEditing(false);
-    console.log('store');
+
+    // editResource(newResource);
     //수정을 걸었다가. 만약 수정에 실패하면> 토스만 띄워줄까? 그렇게되면 수정전 데이터터로 롤백이 되야함.
   };
 
@@ -63,7 +61,7 @@ function ResourceCard({ resource, onClickDelete }: Props) {
           ref={inputRef}
         />
       ) : (
-        <p className={style.text}>{title}</p>
+        <p className={style.text}>{resource.title}</p>
       )}
       <div className={style.btnContainer}>
         <button onClick={onClickEdit}>

@@ -1,5 +1,6 @@
 export interface resourceType {
   id: string;
-  data: string | File;
+  title: string;
+  file?: File;
   isFetching?: boolean;
 }
